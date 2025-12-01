@@ -1,0 +1,143 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.hide {
+    display: none;
+}
+
+#game-window  {
+    width: 100%;
+    height: 100%;
+}
+
+#graphic-header {
+    width: 100%;
+    height: 10rem;
+    background-color: #111;
+}
+
+
+#important-info {
+    height: 10rem;
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    color: #EEE;
+}
+
+#console {
+    color: #EEE;
+    background-color: #222;
+    height: 5rem;
+    width: 100%;
+    font-family: 'Courier New', Courier, monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: end;
+    padding: 2rem;
+    overflow-y: hidden;   
+}
+
+
+.console-line {
+  opacity: 0;
+  transform: translateY(3px);
+  animation: fadeInLine 0.6s ease forwards;
+}
+
+@keyframes fadeInLine {
+  0% { opacity: 0; transform: translateY(3px); }
+  70% { opacity: 1; transform: translateY(0); }
+  80% { opacity: 0.8; }
+  100% { opacity: 1; }
+}
+
+
+#resources-and-upgrades {
+    padding: 3rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    flex-wrap: wrap;
+    height: fit-content;
+}
+
+#resources-and-upgrades button {
+    border: #111 solid 1px;
+    background-color: #EEE;
+    color: #111;
+    border-radius: 0.1rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    padding-top: 0.25rem;
+}
+
+#resources-and-upgrades button:hover {
+    border: #111 solid 1px;
+    background-color: #222;
+    color: #EEE;
+}
+
+#resources {
+    border: #111 solid 2px;
+    padding: 1rem;
+    height: 30rem;
+}
+
+#resources h2, #upgrades h2 {
+    margin-bottom: 1rem;
+}
+
+.resource-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: #EEE;
+    margin: 0.2rem;
+    padding: 0.5rem;
+    border-radius: 0.2rem;
+    border: #222 solid 2px;
+}
+
+#upgrades {
+    border: #111 solid 2px;
+    border-left: none;
+    padding: 1rem;
+    height: 30rem;
+
+}
+
+#upgrade-list {
+    overflow-y: scroll;
+    max-height: 25rem;
+}
+
+.upgrade-card {
+   border: #111 solid 2px; 
+   margin: 0.25rem;
+   padding: 0.5rem;
+   background-color: #EEE;
+   border-radius: 0.2rem;
+   width: 40rem;
+}
+
+.upgrade-card button {
+   padding: 0.1rem 0.2rem;
+   
+}
+
+.upgrade-cost  {
+    margin: 0.25rem 0;
+}
+
+@media screen and (max-width: 1045px) {
+    body {
+        display: none;
+    }
+}

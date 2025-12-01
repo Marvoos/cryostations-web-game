@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>cryostations</title>
+</head>
+<body>
+    <div id="game-window">
+        <div id="graphic-header">
+            <div id="important-info">
+                <div id="station-name-and-location">
+                    <h2>CryoShip Manager</h2>
+                    <h2>Location: <span id="location-display"></span></h2>
+                </div>
+                <div id="funds-info">
+                    <p id="company-name-display"></p>
+                    <p>Total Funds: <span id="funds-display"></span></p>
+                    <p>Profit Per Second: <span id="profit-per-sec-display"></span> USDE</p>
+                </div>
+            </div>
+        </div>
+        <div id="console">
+            <p>>... This is the console. News from around the world will arrive here shortly!</p>
+        </div>
+        <div id="resources-and-upgrades">
+            <div id="resources">
+                <h2>Resources</h2>
+                <div class="resource-card">
+                    <button id="freeze-worker-btn">Freeze Worker</button>
+                    <p>Cost: <span id="freeze-worker-cost-display"></span></p>
+                    <p>Freeze Per Click: <span id="freeze-power-display"></span></p>
+                    <p>Workers Frozen: <span id="freeze-worker-display"></span></p>
+                </div>
+                
+                <div class="resource-card">
+                    <button id="cryopods-btn">CryoPods</button>
+                    <p>Cost: <span id="cryopod-cost-display"></span></p>
+                    <p>Cryopods Per Ship: <span id="cryopods-per-ship-display"></span></p>
+                    <p>Available Cryopods:<span id="cryopods-display"></span></p>
+                </div>
+                <div class="resource-card">
+                    <button id="cryoships-btn">Build Ship</button>
+                    <p>Cost: <span id="build-ship-cost-display"></span></p>
+                    <p>CryoShips on Ground: <span id="cryoships-ground-display"></span></p>
+                </div>
+                <div class="resource-card">
+                    <button id="cryoship-launch-btn">Launch Cryoship</button>
+                    <p>Cost: <span id="launch-cryoship-cost-display"></span></p>
+                    <p>Cryopods Filled: <span id="cryopods-filled-cost-display"></span></p>
+                    <p>CryoShips in Orbit: <span id="cryoship-orbital-display"></span></p>
+                </div>
+            </div>
+            <div id="upgrades">
+                <h2>Upgrades</h2>
+                <div id="upgrade-list">
+
+                </div>
+            </div>
+
+        </div>
+        
+    </div>
+    <script src="gameLoop.js"></script>
+</body>
+</html>
