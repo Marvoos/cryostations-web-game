@@ -6,6 +6,8 @@ const locationDisplay = document.getElementById("location-display");
 const fundsDisplay = document.getElementById("funds-display");
 //Company name paragraph
 const companyDisplay = document.getElementById("company-name-display");
+// Year span display
+const yearDisplay = document.getElementById("year-display");
 //Profit per second display span
 const profitPerSecDisplay = document.getElementById("profit-per-sec-display");
 //Console display div
@@ -34,6 +36,7 @@ const cryoPodsFilledCostDisplay = document.getElementById("cryopods-filled-cost-
 const upgradeListDiv = document.getElementById("upgrade-list");
 
 let cryoShipManager = {
+    year: 2780,
     company: "Cryo Systems United Incorporated",
     location: {
         solarSystem: "Sol",
@@ -95,10 +98,11 @@ let cryoShipManager = {
         },
         {
             name: "Legal Slavery",
-            description: "Now you can dictate policy around slave labour and it's legality as used within the company. Doubles the amount of workers frozen each time.",
+            description: "Now you can dictate policy around slave labour and it's legality as used within the company. Doubles the amount of workers frozen each time and prevents 50% more workers from being paid.",
             cost: 6e10,
             effect: () => {
                 cryoShipManager.freezeAmount = 4;
+                cryoShipManager.profitRate * 1.5;
                 updateAll();
             }
         },
@@ -108,6 +112,7 @@ let cryoShipManager = {
             cost: 1.2e12,
             effect: () => {
                 cryoShipManager.costModifiers.cryoPods *= 0.75;
+                cryoShipManager.costModifiers.freezeWorkers *= 0.75;
             }
         },
     ]
@@ -174,6 +179,7 @@ function displayUpgrades() {
         upgradeDiv.appendChild(upgradeTitle);
         upgradeDiv.appendChild(upgradeBtn);
         upgradeListDiv.appendChild(upgradeDiv);
+
     });
 }
 
@@ -245,19 +251,10 @@ function updateProfitPerSecDisplay() {
     profitPerSecDisplay.textContent = profit > 1e9 ? (profit / 1e9).toLocaleString('en') : profit.toLocaleString('en');
 }
 
-function updateAll() {
-    updateCryoShips();
-    updateFunds();
-    updateFrozenWorkers();
-    updateFreezePower()
-    updateCryoPods();
-    updateProfitPerSecDisplay();
-    updateCost();
-}
-
 function initializeDisplay() {
     locationDisplay.textContent = `${cryoShipManager.location.planet}, ${cryoShipManager.location.solarSystem} - ${cryoShipManager.location.relativeLocation}`;
     companyDisplay.textContent = cryoShipManager.company;
+    displayUpgrades();
     updateAll();
 }
 
@@ -278,14 +275,30 @@ function addToConsole(message) {
     });
 }
 
+function updateYear() {
+    yearDisplay.textContent = cryoShipManager.year + " CE";
+}
+
+
+function updateAll() {
+    updateYear()
+    updateCryoShips();
+    updateFunds();
+    updateFrozenWorkers();
+    updateFreezePower()
+    updateCryoPods();
+    updateProfitPerSecDisplay();
+    updateCost();
+}
+
 
 /** Main Button Event Listeners **/
 
 //Freeze worker button click
 freezeWorkerBtn.addEventListener('click', () => {
     const cost = getCost().freezeWorker; 
-    if (cryoShipManager.totalWorkersFrozen === 1e4 || cryoShipManager.totalWorkersFrozen === 1e5 || cryoShipManager.totalWorkersFrozen === 1e6) {
-        addToConsole(`Total workers frozen has now reached ${cryoShipManager.totalWorkersFrozen}`);
+    if (cryoShipManager.totalWorkersFrozen == 1000 || cryoShipManager.totalWorkersFrozen == 10000 || cryoShipManager.totalWorkersFrozen == 100000) {
+        addToConsole(`The number of workers frozen has now reached ${(cryoShipManager.totalWorkersFrozen).toLocaleString('en')}`);
     }
 
     if (cryoShipManager.resources.totalFunds >= cryoShipManager.freezeAmount * cost && cryoShipManager.resources.workersFrozen < getTotalCryoShipPods()){
@@ -294,6 +307,8 @@ freezeWorkerBtn.addEventListener('click', () => {
         cryoShipManager.totalWorkersFrozen += cryoShipManager.freezeAmount;
         updateAll();
     }
+
+
         
 });
 
@@ -340,13 +355,9 @@ launchCryoShipBtn.addEventListener('click', () => {
 
 //Initializes all display items
 initializeDisplay();
-//Displays all upgrades
-displayUpgrades();
-
-//Adds to the webpage 'console' every 100 seconds
-
 //Updates profit and all updatable objects every second
 setInterval(profitUpdate, 1000);
+
 
 
 

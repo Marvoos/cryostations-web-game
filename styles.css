@@ -115,7 +115,7 @@
 
 #upgrade-list {
     overflow-y: scroll;
-    max-height: 25rem;
+    max-height: 24rem;
 }
 
 .upgrade-card {
@@ -125,6 +125,7 @@
    background-color: #EEE;
    border-radius: 0.2rem;
    width: 40rem;
+   margin-bottom: 1rem;
 }
 
 .upgrade-card button {
