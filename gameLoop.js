@@ -46,7 +46,7 @@ let cryoShipManager = {
     
     resources: 
     {
-        totalFunds: 5.0e15,
+        totalFunds: 5.0e4,
         workersFrozen: 0,
         cryoPodsPerShip: 5,
         fleetOnGround: 1,
