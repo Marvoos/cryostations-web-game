@@ -22,6 +22,15 @@ This project is designed for practical experience in the following development c
 
 ## Newest Features
 
-- Added improved readme featuring new sections - Added 09/12/2025
+09/12/2025
+
+- Added improved readme featuring new sections.
+
+10/12/2025
+
+- Added new purchased upgrade section. No more confusion between to-be-purchased and already purchased upgrades.
+- Fixed a bug which allowed for the number of frozen workers (_on the ground_) to exceed the number of crypods available.
+- Fixed a bug which doubled the cost to freeze workers.
+- Improved UI, cost to freeze workers now displays when there are no cryopods left and dynamic costs based on how many cryopods are available
 
 ## Development Progress

@@ -34,7 +34,7 @@ const cryoShipsInOrbit = document.getElementById("cryoship-orbital-display");
 const cryoPodsFilledCostDisplay = document.getElementById("cryopods-filled-cost-display");
 
 const upgradeListDiv = document.getElementById("upgrade-list");
-
+const upgradesPurchased = document.getElementById("upgrades-purchased");
 let cryoShipManager = {
     year: 2780,
     company: "Cryo Systems United Incorporated",
@@ -46,7 +46,7 @@ let cryoShipManager = {
     
     resources: 
     {
-        totalFunds: 5.0e4,
+        totalFunds: 5.0e15,
         workersFrozen: 0,
         cryoPodsPerShip: 5,
         fleetOnGround: 1,
@@ -156,6 +156,7 @@ function displayUpgrades() {
     const upgrades = cryoShipManager.upgrades;
     upgrades.forEach((upgrade, index) => {
         const upgradeDiv = document.createElement('div');
+        
         upgradeDiv.classList.add("upgrade-card");
 
         const upgradeTitle = document.createElement('p');
@@ -174,8 +175,16 @@ function displayUpgrades() {
                 upgradeBtn.disabled = true;
                 updateAll();
             }
+
+            if (upgrade.purchased) {
+                upgradeDiv.classList.add('upgraded');
+                upgradeListDiv.removeChild(upgradeDiv);
+                upgradeDiv.appendChild(upgradeTitle);
+                upgradeDiv.appendChild(upgradeBtn);
+                upgradesPurchased.appendChild(upgradeDiv);
+            }
         });
-        
+
         upgradeDiv.appendChild(upgradeTitle);
         upgradeDiv.appendChild(upgradeBtn);
         upgradeListDiv.appendChild(upgradeDiv);
@@ -210,6 +219,10 @@ function getTotalCryoShipPods() {
     return cryoShipManager.resources.cryoPodsPerShip * cryoShipManager.resources.fleetOnGround;
 }
 
+function getRemainingCryoPods() {
+    return getTotalCryoShipPods() - cryoShipManager.resources.workersFrozen;
+}
+
 function updateCryoPods() {
     cryoPodsDisplay.textContent = getTotalCryoShipPods();
     cryoPodsPerShip.textContent = cryoShipManager.resources.cryoPodsPerShip;
@@ -230,7 +243,7 @@ function profitUpdate() {
 
 function getCost() { 
     const costObject = {
-        freezeWorker: cryoShipManager.freezeAmount * cryoShipManager.costModifiers.freezeWorkers * Math.floor(1e4 * Math.pow(1.05, cryoShipManager.resources.workersFrozen)),
+        freezeWorker: (cryoShipManager.freezeAmount <= getRemainingCryoPods() ? cryoShipManager.freezeAmount : getRemainingCryoPods()) * cryoShipManager.costModifiers.freezeWorkers * Math.floor(1e4 * Math.pow(1.05, cryoShipManager.resources.workersFrozen)),
         cryoPods: cryoShipManager.costModifiers.cryoPods * Math.floor(1e4 * Math.pow(1.10, cryoShipManager.resources.cryoPodsPerShip)),
         cryoShips: cryoShipManager.costModifiers.cryoShips * Math.floor(1e6 * Math.pow(1.5, cryoShipManager.resources.fleetOnGround + cryoShipManager.resources.fleetInOrbit)),
         launchCryoShip: [cryoShipManager.costModifiers.launchShips * Math.floor(1e6 * Math.pow(3, (cryoShipManager.resources.fleetInOrbit + 1) )), cryoShipManager.resources.cryoPodsPerShip]
@@ -239,7 +252,7 @@ function getCost() {
 }
 
 function updateCost() {
-    freezeWorkerCostDisplay.textContent = getCost().freezeWorker >= 1e9 ? `${(getCost().freezeWorker / 1e9).toLocaleString('en')} B` : getCost().freezeWorker.toLocaleString('en'); 
+    freezeWorkerCostDisplay.textContent = getCost().freezeWorker === 0 ? 'No Cryopods' : getCost().freezeWorker >= 1e9 ? `${(getCost().freezeWorker / 1e9).toLocaleString('en')} B` : getCost().freezeWorker.toLocaleString('en'); 
     cryopodsCostDisplay.textContent = getCost().cryoPods >= 1e9 ? `${(getCost().cryoPods / 1e9).toLocaleString('en')} B` : getCost().cryoPods.toLocaleString('en');
     cryoshipsCostDisplay.textContent = getCost().cryoShips >= 1e9 ? `${(getCost().cryoShips / 1e9).toLocaleString('en')} B` : getCost().cryoShips.toLocaleString('en');
     launchCryoShipCostDisplay.textContent = getCost().launchCryoShip[0] >= 1e9 ? `${(getCost().launchCryoShip[0] / 1e9).toLocaleString('en')} B` : getCost().launchCryoShip[0].toLocaleString('en');
@@ -280,6 +293,8 @@ function updateYear() {
 }
 
 
+
+
 function updateAll() {
     updateYear()
     updateCryoShips();
@@ -293,18 +308,18 @@ function updateAll() {
 
 
 /** Main Button Event Listeners **/
-
 //Freeze worker button click
 freezeWorkerBtn.addEventListener('click', () => {
-    const cost = getCost().freezeWorker; 
+    const actualFreezeAmount = cryoShipManager.freezeAmount <= getRemainingCryoPods() ? cryoShipManager.freezeAmount : getRemainingCryoPods();
+    const cost = getCost().freezeWorker;
     if (cryoShipManager.totalWorkersFrozen == 1000 || cryoShipManager.totalWorkersFrozen == 10000 || cryoShipManager.totalWorkersFrozen == 100000) {
         addToConsole(`The number of workers frozen has now reached ${(cryoShipManager.totalWorkersFrozen).toLocaleString('en')}`);
     }
 
-    if (cryoShipManager.resources.totalFunds >= cryoShipManager.freezeAmount * cost && cryoShipManager.resources.workersFrozen < getTotalCryoShipPods()){
-        cryoShipManager.resources.totalFunds -= cryoShipManager.freezeAmount * cost;
-        cryoShipManager.resources.workersFrozen += cryoShipManager.freezeAmount;
-        cryoShipManager.totalWorkersFrozen += cryoShipManager.freezeAmount;
+    if (cryoShipManager.resources.totalFunds >= cost && cryoShipManager.resources.workersFrozen < getTotalCryoShipPods()){
+        cryoShipManager.resources.workersFrozen += actualFreezeAmount;
+        cryoShipManager.totalWorkersFrozen += actualFreezeAmount;
+        cryoShipManager.resources.totalFunds -= cost;
         updateAll();
     }
 
