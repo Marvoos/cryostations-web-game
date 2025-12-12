@@ -33,4 +33,8 @@ This project is designed for practical experience in the following development c
 - Fixed a bug which doubled the cost to freeze workers.
 - Improved UI, cost to freeze workers now displays when there are no cryopods left and dynamic costs based on how many cryopods are available
 
+11/12/2025
+
+- Added three new reseach items (Asteroid Capture Program, Propaganda Machine Promotions, Evade Ethics Regulations) and edited the title of "Legal Slavery" into "Sliding into Indentured Servitude".
+
 ## Development Progress

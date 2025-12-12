@@ -46,7 +46,7 @@ let cryoShipManager = {
     
     resources: 
     {
-        totalFunds: 5.0e4,
+        totalFunds: 5e4,
         workersFrozen: 0,
         cryoPodsPerShip: 5,
         fleetOnGround: 1,
@@ -69,6 +69,14 @@ let cryoShipManager = {
             cost: 1.5e9,
             effect: () => {
                 cryoShipManager.profitRate += cryoShipManager.profitRate * 1.5;
+            }
+        },
+        {
+            name: "Evade Ethics Regulations",
+            description: "Once again, the government has interfered in our ability to make as much profit as possible. Time to hire a professional to avoid these tyrannical, marxists, ethics regulations. Reduces cost to freeze workers by 25%",
+            cost: 5e9,
+            effect: () => {
+                cryoShipManager.costModifiers.freezeWorkers *= 0.75;
             }
         },
         {
@@ -97,13 +105,21 @@ let cryoShipManager = {
             }
         },
         {
-            name: "Legal Slavery",
+            name: "Sliding into Indetured Servitude",
             description: "Now you can dictate policy around slave labour and it's legality as used within the company. Doubles the amount of workers frozen each time and prevents 50% more workers from being paid.",
             cost: 6e10,
             effect: () => {
                 cryoShipManager.freezeAmount = 4;
                 cryoShipManager.profitRate * 1.5;
                 updateAll();
+            }
+        },
+        {
+            name: "Propaganda Machine Promotions",
+            description: `"Build a new life today by registering for our corporate colony program! Free our country of tyranny and help fight for our freedom!", Decreases cost to find workers by 25%`,
+            cost: 7e10,
+            effect: () => {
+                cryoShipManager.costModifiers.freezeWorkers *= 0.75;
             }
         },
         {
@@ -114,6 +130,17 @@ let cryoShipManager = {
                 cryoShipManager.costModifiers.cryoPods *= 0.75;
                 cryoShipManager.costModifiers.freezeWorkers *= 0.75;
             }
+        },
+        {
+            name: "Asteroid Capture Program",
+            description: "This asteroid capture program works by grabbing resource rich rocks from space and hoarding them by slowly extracting Helium-3 and metals used for our ships. Not only does it reduce the cost of building and launching these ships, but it also increases our profit rate by very high margins.",
+            cost: 4e12,
+            effect: () => {
+                cryoShipManager.costModifiers.cryoShips *= 0.75;
+                cryoShipManager.costModifiers.launchShips *= 0.75;
+                cryoShipManager.profitRate *= 2;
+            }
+
         },
     ]
 } 
