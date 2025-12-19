@@ -7,12 +7,13 @@ const fundsDisplay = document.getElementById("funds-display");
 //Company name paragraph
 const companyDisplay = document.getElementById("company-name-display");
 // Year span display
-const yearDisplay = document.getElementById("year-display");
+const dateDisplay = document.getElementById("date-display");
 //Profit per second display span
 const profitPerSecDisplay = document.getElementById("profit-per-sec-display");
 //Console display div
 const consoleNewsDisplay = document.getElementById("console");
 
+const stabilityDisplay = document.getElementById("stability-display");
 /****/
 const freezeWorkerCostDisplay = document.getElementById("freeze-worker-cost-display");
 const freezeWorkerBtn = document.getElementById("freeze-worker-btn");
@@ -36,17 +37,18 @@ const cryoPodsFilledCostDisplay = document.getElementById("cryopods-filled-cost-
 const upgradeListDiv = document.getElementById("upgrade-list");
 const upgradesPurchased = document.getElementById("upgrades-purchased");
 let cryoShipManager = {
-    year: 2780,
+    date: "",
     company: "Cryo Systems United Incorporated",
     location: {
         solarSystem: "Sol",
         planet: "Earth",
         relativeLocation: "CryoCentre, Dallas Texas"
     },
+    stability: 1.0,
     
     resources: 
     {
-        totalFunds: 5e4,
+        totalFunds: 10e3,
         workersFrozen: 0,
         cryoPodsPerShip: 5,
         fleetOnGround: 1,
@@ -81,7 +83,7 @@ let cryoShipManager = {
         },
         {
             name: "Cryo-Sleep transfer protocol",
-            description: "Allows workers to provide services while in cryosleep, wages from these assets are sent straight to us",
+            description: "Allows workers to provide services while in cryosleep. Their wages are automatically redirected to corporate accounts.",
             cost: 1e10,
             effect: () => {
                 cryoShipManager.profitRate *= 2;
@@ -110,7 +112,7 @@ let cryoShipManager = {
             cost: 6e10,
             effect: () => {
                 cryoShipManager.freezeAmount = 4;
-                cryoShipManager.profitRate * 1.5;
+                cryoShipManager.profitRate *= 1.5;
                 updateAll();
             }
         },
@@ -171,10 +173,15 @@ function randomConsoleNews() {
         "Oceans officially privatized. Beach access now available via monthly subscription.",
         "Antarctica now home to luxury resorts for the ultra-wealthy. Locals remain penguins.",
         "Cryo Systems United launches 'Friendship Colonies' - alien laborers call them 'mines.'",
+        "Student from MIT receives Nobel Peace prize for developing advanced new weapons system - 'This will help to further NUSA intervention across the planet'",
+        "The average worker now hoarding thousands of dollars in assets for longer than intended - Economists warn how this could effect the economy.",
+        "University students across the country are demanding a more equitable institution - Donors are furious",
+        "Essentials needed for human survival more expensive than luxury products for 755th year in a row.",
+        "NUSA universities now encouraged to cut budget for humanities programs by up to 98%. NUSA Secretary of education explains 'This is the next generation of corporate workers, we should treat them as such.'",
     ];
 
     let randomString = stringArray[Math.floor(Math.random() * stringArray.length)];
-    return startString + randomString;
+    return randomString;
 }
 
 
@@ -256,7 +263,7 @@ function updateCryoPods() {
 }
 
 function getProfit() {
-    const groundProfit = cryoShipManager.profitRate * cryoShipManager.totalWorkersFrozen * cryoShipManager.resources.fleetOnGround * cryoShipManager.resources.cryoPodsPerShip;
+    const groundProfit = cryoShipManager.profitRate * Math.pow(cryoShipManager.totalWorkersFrozen, 0.85) * (1 + cryoShipManager.resources.fleetOnGround * 0.15);
     const orbitalProfit = cryoShipManager.profitRate * cryoShipManager.resources.fleetInOrbit * 0.25; // each orbiting ship gives 25% base
     return groundProfit + orbitalProfit;
 }
@@ -267,11 +274,19 @@ function profitUpdate() {
     updateAll();
 }
 
+function getStability() {
+    return cryoShipManager.stability;
+}
+
+function updateStability() {
+    stabilityDisplay.textContent = getStability() * 100 + "%"
+}
+
 
 function getCost() { 
     const costObject = {
-        freezeWorker: (cryoShipManager.freezeAmount <= getRemainingCryoPods() ? cryoShipManager.freezeAmount : getRemainingCryoPods()) * cryoShipManager.costModifiers.freezeWorkers * Math.floor(1e4 * Math.pow(1.05, cryoShipManager.resources.workersFrozen)),
-        cryoPods: cryoShipManager.costModifiers.cryoPods * Math.floor(1e4 * Math.pow(1.10, cryoShipManager.resources.cryoPodsPerShip)),
+        freezeWorker: (cryoShipManager.freezeAmount <= getRemainingCryoPods() ? cryoShipManager.freezeAmount : getRemainingCryoPods()) * cryoShipManager.costModifiers.freezeWorkers * Math.floor(1e4 * Math.pow(1.07, cryoShipManager.resources.workersFrozen)),
+        cryoPods: cryoShipManager.costModifiers.cryoPods * Math.floor(1e4 * Math.pow(1.18, cryoShipManager.resources.cryoPodsPerShip)),
         cryoShips: cryoShipManager.costModifiers.cryoShips * Math.floor(1e6 * Math.pow(1.5, cryoShipManager.resources.fleetOnGround + cryoShipManager.resources.fleetInOrbit)),
         launchCryoShip: [cryoShipManager.costModifiers.launchShips * Math.floor(1e6 * Math.pow(3, (cryoShipManager.resources.fleetInOrbit + 1) )), cryoShipManager.resources.cryoPodsPerShip]
     }
@@ -294,6 +309,7 @@ function updateProfitPerSecDisplay() {
 function initializeDisplay() {
     locationDisplay.textContent = `${cryoShipManager.location.planet}, ${cryoShipManager.location.solarSystem} - ${cryoShipManager.location.relativeLocation}`;
     companyDisplay.textContent = cryoShipManager.company;
+    setInitialDate();
     displayUpgrades();
     updateAll();
 }
@@ -315,21 +331,32 @@ function addToConsole(message) {
     });
 }
 
-function updateYear() {
-    yearDisplay.textContent = cryoShipManager.year + " CE";
+function addRandomHeadlineToConsole() {
+    const newRandomHeadline = randomConsoleNews();
+    addToConsole(newRandomHeadline);
 }
 
+function setInitialDate() { 
+    let currentDate = new Date(Date.now());
+    currentDate.setFullYear(2780);
+    cryoShipManager.date = currentDate;
+}
 
-
+function updateDate() {
+    let currentDate = cryoShipManager.date;
+    dateDisplay.textContent = `${currentDate.getDate()}-${currentDate.getMonth() + 1}-${currentDate.getFullYear()}`;
+}
 
 function updateAll() {
-    updateYear()
+    updateDate()
     updateCryoShips();
     updateFunds();
     updateFrozenWorkers();
     updateFreezePower()
     updateCryoPods();
     updateProfitPerSecDisplay();
+    updateStability();
+    updateDate();
     updateCost();
 }
 
@@ -340,7 +367,7 @@ freezeWorkerBtn.addEventListener('click', () => {
     const actualFreezeAmount = cryoShipManager.freezeAmount <= getRemainingCryoPods() ? cryoShipManager.freezeAmount : getRemainingCryoPods();
     const cost = getCost().freezeWorker;
     if (cryoShipManager.totalWorkersFrozen == 1000 || cryoShipManager.totalWorkersFrozen == 10000 || cryoShipManager.totalWorkersFrozen == 100000) {
-        addToConsole(`The number of workers frozen has now reached ${(cryoShipManager.totalWorkersFrozen).toLocaleString('en')}`);
+        addToConsole(`${cryoShipManager.company} has frozen a total of ${(cryoShipManager.totalWorkersFrozen).toLocaleString('en')} workers - A world first!`);
     }
 
     if (cryoShipManager.resources.totalFunds >= cost && cryoShipManager.resources.workersFrozen < getTotalCryoShipPods()){
@@ -394,9 +421,9 @@ launchCryoShipBtn.addEventListener('click', () => {
 });
 
 /** Function calls **/
-
 //Initializes all display items
 initializeDisplay();
+setInterval(addRandomHeadlineToConsole, 100000);
 //Updates profit and all updatable objects every second
 setInterval(profitUpdate, 1000);
 

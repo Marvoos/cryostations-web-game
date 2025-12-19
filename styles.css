@@ -8,6 +8,32 @@
     display: none;
 }
 
+.help-btn {
+    border-radius: 50%;
+    width: 2rem;
+    height: 2rem;
+    padding: 0.5rem;
+    color: #EEE;
+    background-color: #111;
+    margin: 1rem;
+    border: 1px solid;
+    transition: all 0.25s ease-in-out;
+    cursor: pointer;
+}
+
+.help-btn:hover {
+    color: #111;
+    background-color: #EEE;
+    border: 1px #111 solid;
+}
+
+.interactive-ui {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 #game-window  {
     width: 100%;
     height: 100%;
@@ -38,7 +64,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: end;
+    justify-content: center;
     padding: 2rem;
     overflow-y: hidden;   
 }

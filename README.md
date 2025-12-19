@@ -14,6 +14,7 @@ This project is designed for practical experience in the following development c
 
 - Linking HTML elements to JavaScript (Querying + updating UI)
 - DOM rendering and dynamic content creation
+- JavaScript-specific Objects
 - Exponential cost scaling and incremental game balancing
 - Modular Object-Based game architecture
 - Passive income and resource generation systems
@@ -37,4 +38,21 @@ This project is designed for practical experience in the following development c
 
 - Added three new reseach items (Asteroid Capture Program, Propaganda Machine Promotions, Evade Ethics Regulations) and edited the title of "Legal Slavery" into "Sliding into Indentured Servitude".
 
+19/12/2025
+
+- Experimenting with a progression system. Added system stability which lacks functionality at this time.
+- Removed 'year' and replaced it with 'date' in the Ship Manager object.
+  - To provide a dynamically updating calendar
+  - To allow for the possibility of a game statistics screen
+- Fixed the randomly updating console which now updates every 100 seconds
+
 ## Development Progress
+
+- [X] Add a progression system
+  - Added System stability as the progression system. Now need to implement:
+    - [ ] A tutorial/explanation of how the game could end
+    - [ ] An update function
+    - [ ] System stability management upgrades
+    - [ ] End screen with provided statistics and analysis
+- [ ] Balance cost-to-generation ratio
+- [ ] Clean-up UI, animations, and hover effects
