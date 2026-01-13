@@ -1,3 +1,5 @@
+import { cryoShipManager } from "./cryoShipManager.js";
+
 //Game window. The window in which the entirety of the game exists
 const gameWindow = document.getElementById("game-window");
 //The location display span
@@ -36,117 +38,47 @@ const cryoPodsFilledCostDisplay = document.getElementById("cryopods-filled-cost-
 
 const upgradeListDiv = document.getElementById("upgrade-list");
 const upgradesPurchased = document.getElementById("upgrades-purchased");
-let cryoShipManager = {
-    date: "",
-    company: "Cryo Systems United Incorporated",
-    location: {
-        solarSystem: "Sol",
-        planet: "Earth",
-        relativeLocation: "CryoCentre, Dallas Texas"
-    },
-    stability: 1.0,
+
+
+//Helper function to provide uniform logic across all costs, user funds, and user profits.
+/*
+    Used in the following functions:
+    - displayUpgrades()
+    - updateFunds()
+    - updateCost()
+    - updateProfitPerSecondDisplay()
+
+    @param {number} inputFunds The total funds/cost/profit needing to be converted to a normalized format.
+    @returns {string} fundsString The normalized number in a string format and added currency type and shortened number form.
+
+*/
+function normalizeCostFunds(inputFunds) {
+    let fundsString;
+    if (inputFunds >= 1e18) {
+        fundsString = `${(inputFunds / 1e18).toLocaleString('en')} Q USDE`;
+    }
+    else if (inputFunds >= 1e15) {
+        fundsString = `${(inputFunds / 1e12).toLocaleString('en')} q USDE`;
+    }
+    else if (inputFunds >= 1e12) {
+        fundsString = `${(inputFunds / 1e12).toLocaleString('en')} T USDE`;
+    }
+    else if (inputFunds >= 1e9) {
+        fundsString = `${(inputFunds / 1e9).toLocaleString('en')} B USDE`;
+    }
+    else if (inputFunds >= 1e6) {
+        fundsString = `${(inputFunds / 1e6).toLocaleString('en')} M USDE`;
+    }
+    else {
+        fundsString = `${inputFunds.toLocaleString('en')} USDE`;
+    }
     
-    resources: 
-    {
-        totalFunds: 10e3,
-        workersFrozen: 0,
-        cryoPodsPerShip: 5,
-        fleetOnGround: 1,
-        fleetInOrbit: 0,
-    },
-    profitRate: 150, 
-    totalWorkersFrozen: 0,
-    freezeAmount: 1,
-    costModifiers: {
-        freezeWorkers: 1,
-        cryoPods: 1,
-        cryoShips: 1,
-        launchShips: 1
-    },
+    return fundsString;
+}
 
-    upgrades: [
-        {
-            name: "Socialize losses, privitize gains",
-            description: "As a capital owner, you're entitled to taxpayer dollars to improve your company! Just hire some lobbyists and you're good.",
-            cost: 1.5e9,
-            effect: () => {
-                cryoShipManager.profitRate += cryoShipManager.profitRate * 1.5;
-            }
-        },
-        {
-            name: "Evade Ethics Regulations",
-            description: "Once again, the government has interfered in our ability to make as much profit as possible. Time to hire a professional to avoid these tyrannical, marxists, ethics regulations. Reduces cost to freeze workers by 25%",
-            cost: 5e9,
-            effect: () => {
-                cryoShipManager.costModifiers.freezeWorkers *= 0.75;
-            }
-        },
-        {
-            name: "Cryo-Sleep transfer protocol",
-            description: "Allows workers to provide services while in cryosleep. Their wages are automatically redirected to corporate accounts.",
-            cost: 1e10,
-            effect: () => {
-                cryoShipManager.profitRate *= 2;
-            }
-        },
-        {
-            name: "Out-of-World interns (unpaid)",
-            description: "Using the docile Mollagjar citizens, we can now freeze double the workers at a time.",
-            cost: 2.5e10,
-            effect: () => {
-                cryoShipManager.freezeAmount = 2;
-                updateAll();
-            }
-        },  
-        { 
-            name: "Fusion powered cryopods",
-            description: "Cryopods are now powered through fusion thus more efficient and less costly",
-            cost: 5e10,
-            effect: () => {
-                cryoShipManager.costModifiers.cryoPods *= 0.75; 
-            }
-        },
-        {
-            name: "Sliding into Indetured Servitude",
-            description: "Now you can dictate policy around slave labour and it's legality as used within the company. Doubles the amount of workers frozen each time and prevents 50% more workers from being paid.",
-            cost: 6e10,
-            effect: () => {
-                cryoShipManager.freezeAmount = 4;
-                cryoShipManager.profitRate *= 1.5;
-                updateAll();
-            }
-        },
-        {
-            name: "Propaganda Machine Promotions",
-            description: `"Build a new life today by registering for our corporate colony program! Free our country of tyranny and help fight for our freedom!", Decreases cost to find workers by 25%`,
-            cost: 7e10,
-            effect: () => {
-                cryoShipManager.costModifiers.freezeWorkers *= 0.75;
-            }
-        },
-        {
-            name: "Antimatter powered cryopods",
-            description: "Experimental antimatter from R&D now implemented as a power source",
-            cost: 1.2e12,
-            effect: () => {
-                cryoShipManager.costModifiers.cryoPods *= 0.75;
-                cryoShipManager.costModifiers.freezeWorkers *= 0.75;
-            }
-        },
-        {
-            name: "Asteroid Capture Program",
-            description: "This asteroid capture program works by grabbing resource rich rocks from space and hoarding them by slowly extracting Helium-3 and metals used for our ships. Not only does it reduce the cost of building and launching these ships, but it also increases our profit rate by very high margins.",
-            cost: 4e12,
-            effect: () => {
-                cryoShipManager.costModifiers.cryoShips *= 0.75;
-                cryoShipManager.costModifiers.launchShips *= 0.75;
-                cryoShipManager.profitRate *= 2;
-            }
 
-        },
-    ]
-} 
-
+// A helper function that includes an array of news headlines to choose a random headline from. Used in the function addRandomHeadlineToConsole()
+// @returns {string} A random string from the stringArray
 function randomConsoleNews() {
     let stringArray = [
         "In a moment of success, Amazing Stores Limited busts unionizing workers.", 
@@ -172,7 +104,7 @@ function randomConsoleNews() {
         "Interstellar census reveals aliens now outnumber humans in orbit. Politicians promise to 'look into that later'",
         "Oceans officially privatized. Beach access now available via monthly subscription.",
         "Antarctica now home to luxury resorts for the ultra-wealthy. Locals remain penguins.",
-        "Cryo Systems United launches 'Friendship Colonies' - alien laborers call them 'mines.'",
+        "Cryo Systems United launches 'Friendship Colonies' - alien labourers call them 'mines.'",
         "Student from MIT receives Nobel Peace prize for developing advanced new weapons system - 'This will help to further NUSA intervention across the planet'",
         "The average worker now hoarding thousands of dollars in assets for longer than intended - Economists warn how this could effect the economy.",
         "University students across the country are demanding a more equitable institution - Donors are furious",
@@ -184,8 +116,29 @@ function randomConsoleNews() {
     return randomString;
 }
 
+// A helper function to allow a string to be printed to the onscreen 'console'.
+// Used in addRandomHeadlineToConsole()
+// Used in freezeWorkersBtn 'click' event listener for achievment purposes
+// @param {string} message The string to add to the 'console'
+function addToConsole(message) {
+    const newLine = document.createElement("p");
+    let startString = ">.... ";
+    newLine.textContent = startString + message;
+    newLine.classList.add("console-line");
+    while (consoleNewsDisplay.firstChild) {
+        consoleNewsDisplay.removeChild(consoleNewsDisplay.firstChild);
+    }
+    consoleNewsDisplay.appendChild(newLine);
 
+    // Scroll to bottom
+    consoleNewsDisplay.scrollTo({
+        top: consoleNewsDisplay.scrollHeight,
+        behavior: "smooth"
+    });
+}
 
+// Used to display every upgrade listed in the cryoShipManager.
+// Used in initializeDisplay()
 function displayUpgrades() {
     const upgrades = cryoShipManager.upgrades;
     upgrades.forEach((upgrade, index) => {
@@ -194,7 +147,7 @@ function displayUpgrades() {
         upgradeDiv.classList.add("upgrade-card");
 
         const upgradeTitle = document.createElement('p');
-        upgradeTitle.innerHTML = `<strong>${upgrade.name}</strong> <p>${upgrade.description}</p> <p class="upgrade-cost">Cost: ${upgrade.cost >= 1e9 ? (upgrade.cost / 1e9).toLocaleString('en') + " B" : upgrade.cost.toLocaleString('en')} USDE</p>`;
+        upgradeTitle.innerHTML = `<strong>${upgrade.name}</strong> <p>${upgrade.description}</p> <p class="upgrade-cost">Cost: ${normalizeCostFunds(upgrade.cost)}</p>`;
         
         const upgradeBtn = document.createElement('button');
         upgradeBtn.textContent = upgrade.purchased ? `Purchased` : `Purchase`;
@@ -241,12 +194,7 @@ function updateFrozenWorkers() {
 }
 
 function updateFunds() {
-    if (cryoShipManager.resources.totalFunds >= 1e9) {
-        fundsDisplay.textContent = `${(cryoShipManager.resources.totalFunds/1e9).toLocaleString('en')} B, USDE`;
-    }
-    else {
-        fundsDisplay.textContent = `${cryoShipManager.resources.totalFunds.toLocaleString('en')} USDE`;
-    }
+    fundsDisplay.textContent = normalizeCostFunds(cryoShipManager.resources.totalFunds); 
 }
 
 function getTotalCryoShipPods() {
@@ -279,7 +227,7 @@ function getStability() {
 }
 
 function updateStability() {
-    stabilityDisplay.textContent = getStability() * 100 + "%"
+    stabilityDisplay.textContent = getStability() * 100 + "%";
 }
 
 
@@ -294,42 +242,28 @@ function getCost() {
 }
 
 function updateCost() {
-    freezeWorkerCostDisplay.textContent = getCost().freezeWorker === 0 ? 'No Cryopods' : getCost().freezeWorker >= 1e9 ? `${(getCost().freezeWorker / 1e9).toLocaleString('en')} B` : getCost().freezeWorker.toLocaleString('en'); 
-    cryopodsCostDisplay.textContent = getCost().cryoPods >= 1e9 ? `${(getCost().cryoPods / 1e9).toLocaleString('en')} B` : getCost().cryoPods.toLocaleString('en');
-    cryoshipsCostDisplay.textContent = getCost().cryoShips >= 1e9 ? `${(getCost().cryoShips / 1e9).toLocaleString('en')} B` : getCost().cryoShips.toLocaleString('en');
-    launchCryoShipCostDisplay.textContent = getCost().launchCryoShip[0] >= 1e9 ? `${(getCost().launchCryoShip[0] / 1e9).toLocaleString('en')} B` : getCost().launchCryoShip[0].toLocaleString('en');
+    freezeWorkerCostDisplay.textContent = getRemainingCryoPods() > 0 ? normalizeCostFunds(getCost().freezeWorker) : "No Cryopods"; 
+    cryopodsCostDisplay.textContent = normalizeCostFunds(getCost().cryoPods);
+    cryoshipsCostDisplay.textContent = normalizeCostFunds(getCost().cryoShips);
+    launchCryoShipCostDisplay.textContent = normalizeCostFunds(getCost().launchCryoShip[0]);
     cryoPodsFilledCostDisplay.textContent = `${cryoShipManager.resources.workersFrozen} / ${getCost().launchCryoShip[1]}`;
 }
 
 function updateProfitPerSecDisplay() {
     const profit = getProfit();
-    profitPerSecDisplay.textContent = profit > 1e9 ? (profit / 1e9).toLocaleString('en') : profit.toLocaleString('en');
+    profitPerSecDisplay.textContent = normalizeCostFunds(profit);
 }
 
 function initializeDisplay() {
     locationDisplay.textContent = `${cryoShipManager.location.planet}, ${cryoShipManager.location.solarSystem} - ${cryoShipManager.location.relativeLocation}`;
     companyDisplay.textContent = cryoShipManager.company;
     setInitialDate();
+    updateDate();
     displayUpgrades();
     updateAll();
 }
 
-function addToConsole(message) {
-    const newLine = document.createElement("p");
-    let startString = ">.... ";
-    newLine.textContent = startString + message;
-    newLine.classList.add("console-line");
-    while (consoleNewsDisplay.firstChild) {
-        consoleNewsDisplay.removeChild(consoleNewsDisplay.firstChild);
-    }
-    consoleNewsDisplay.appendChild(newLine);
 
-    // Scroll to bottom
-    consoleNewsDisplay.scrollTo({
-        top: consoleNewsDisplay.scrollHeight,
-        behavior: "smooth"
-    });
-}
 
 function addRandomHeadlineToConsole() {
     const newRandomHeadline = randomConsoleNews();
@@ -344,21 +278,45 @@ function setInitialDate() {
 
 function updateDate() {
     let currentDate = cryoShipManager.date;
+    currentDate.setDate(currentDate.getDate() + 1);
     dateDisplay.textContent = `${currentDate.getDate()}-${currentDate.getMonth() + 1}-${currentDate.getFullYear()}`;
 }
 
+/* Update All function used to update UI */
+
 function updateAll() {
-    updateDate()
-    updateCryoShips();
-    updateFunds();
+
+    // Uopdate the 
     updateFrozenWorkers();
+
+
     updateFreezePower()
+    
+    
     updateCryoPods();
+    
+    // Updates the UI for the number cryoships on ground under the 'Build Ships' button. 
+    // Updates the UI for the number of cryoships in orbit under the 'Launch Cryoship' button.
+    updateCryoShips();
+
+    // Updates the UI to display the manager's funds as it appears under the cryoShipManager.resources.totalFunds 
+    // If over a billion, display funds divided by a billion followed by 'B USDE'.
+    // If over a quintillion, 1e18, display funds divided by a quintillion followed by 'Q USDE'
+    updateFunds();
+
     updateProfitPerSecDisplay();
-    updateStability();
-    updateDate();
+
+
     updateCost();
+
+
+    updateStability();
+    
 }
+
+/* End of Update All function */
+
+
 
 
 /** Main Button Event Listeners **/
@@ -420,10 +378,15 @@ launchCryoShipBtn.addEventListener('click', () => {
     }
 });
 
+/* End of event listeners */
+
+
 /** Function calls **/
 //Initializes all display items
 initializeDisplay();
 setInterval(addRandomHeadlineToConsole, 100000);
+//Updates the date every second
+setInterval(updateDate, 1000);
 //Updates profit and all updatable objects every second
 setInterval(profitUpdate, 1000);
 

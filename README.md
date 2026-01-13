@@ -46,6 +46,12 @@ This project is designed for practical experience in the following development c
   - To allow for the possibility of a game statistics screen
 - Fixed the randomly updating console which now updates every 100 seconds
 
+12/01/2026
+
+- Added a date system which updates the day every single second for more immersion.
+- Added more documentation and will add more later.
+- Split the JSON data into a separate file and refactored a bit more.
+
 ## Development Progress
 
 - [X] Add a progression system
