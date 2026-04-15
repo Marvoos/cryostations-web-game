@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles/styles.css">
     <title>cryostations</title>
 </head>
 <body>
@@ -17,46 +17,48 @@
                 </div>
                 <div id="funds-info">
                     <p id="company-name-display"></p>
-                    <p><strong>System Stability: <span id="stability-display"></span></strong></p>
                     <p>Total Funds: <span id="funds-display"></span></p>
                     <p>Profit Per Second: <span id="profit-per-sec-display"></span></p>
                 </div>
             </div>
         </div>
         <div id="console">
-            <p>>... This is the console. News from around the world will arrive here shortly!</p>
+            <div class="console-lines">
+                <p class="console-line">&gt; ... This is the console. News from around the world will arrive here shortly!</p>
+            </div>
         </div>
 
             
-        <div id="resources-and-upgrades">
-            <div id="resources">
+        <div class="flex flex-row justify-space-between">
+            <div>
                 <h2>Resources</h2>
                 <div class="resource-card">
-                    <button id="freeze-worker-btn">Freeze Worker</button>
+                    <button class="button-outline" id="freeze-worker-btn">Freeze Worker</button>
                     <p>Cost: <span id="freeze-worker-cost-display"></span></p>
                     <p>Frozen Per Click: <span id="freeze-power-display"></span></p>
                     <p>Workers Frozen: <span id="freeze-worker-display"></span></p>
                 </div>
                 
                 <div class="resource-card">
-                    <button id="cryopods-btn">CryoPods</button>
+                    <button class="button-outline" id="cryopods-btn">CryoPods</button>
                     <p>Cost: <span id="cryopod-cost-display"></span></p>
                     <p>Cryopods Per Ship: <span id="cryopods-per-ship-display"></span></p>
                     <p>Available Cryopods:<span id="cryopods-display"></span></p>
                 </div>
                 <div class="resource-card">
-                    <button id="cryoships-btn">Build Ship</button>
+                    <button class="button-outline" id="cryoships-btn">Build Ship</button>
                     <p>Cost: <span id="build-ship-cost-display"></span></p>
                     <p>CryoShips on Ground: <span id="cryoships-ground-display"></span></p>
                 </div>
                 <div class="resource-card">
-                    <button id="cryoship-launch-btn">Launch Cryoship</button>
+                    <button class="button-outline" id="cryoship-launch-btn">Launch Cryoship</button>
                     <p>Cost: <span id="launch-cryoship-cost-display"></span></p>
                     <p>Cryopods Filled: <span id="cryopods-filled-cost-display"></span></p>
                     <p>CryoShips in Orbit: <span id="cryoship-orbital-display"></span></p>
                 </div>
             </div>
-            <div id="upgrades">
+
+            <div class="flex flex-col justify-space-evenly">
                 <h2>Upgrades</h2>
                 <div id="upgrade-list">
 
@@ -70,7 +72,12 @@
         </div>
     
     </div>
-    <script type="module" src="cryoShipManager.js"></script>
-    <script type="module" src="gameLoop.js"></script>
+    <script type="module" src="scripts/cryoShipManager.js"></script>
+    <script type="module" src="scripts/profitsCosts.js"></script>
+    <script type="module" src="scripts/consoleLine.js"></script>
+    <script type="module" src="scripts/displayResearch.js"></script>
+    <script type="module" src="scripts/mainBtns.js"></script>
+    <script type="module" src="scripts/gameLoop.js"></script>
+
 </body>
 </html>
